@@ -18,22 +18,45 @@ Agent Gian is a Claude Code plugin that loads a complete working methodology int
 - **Optional pre-commit tsc hook** — blocks commits with TypeScript errors.
 - **Explicit conflict resolutions** — 6 tensions between rules with explicit rulings.
 
-## Install
+## Install (3 minutes)
 
-1. Add `giansausa/agent-gian` as a Claude Code plugin marketplace source. The exact CLI verb depends on your Claude Code version — check `/plugin --help` or the Claude Code docs.
-2. Enable the `agent-gian` plugin from that marketplace.
-3. Run `/agent-gian setup` and answer the three consent prompts (methodology block, pre-commit hook, auto-push).
+**Quick version** — open `~/.claude/settings.json` and add these two entries (merge with anything already there):
 
-See [INSTALL.md](INSTALL.md) for the detailed flow + troubleshooting.
+```json
+{
+  "enabledPlugins": {
+    "agent-gian@agent-gian": true
+  },
+  "extraKnownMarketplaces": {
+    "agent-gian": {
+      "source": {
+        "source": "github",
+        "repo": "giansausa/agent-gian"
+      }
+    }
+  }
+}
+```
+
+Then **restart Claude Code** and run:
+
+```
+/agent-gian setup
+```
+
+Answer the 3 consent prompts (methodology block = yes, pre-commit tsc hook = yes if you use TypeScript, auto-push = no unless you know what you're opting into).
+
+**Verify:** run `/agent-gian` — you should see the status dashboard.
+
+📖 **Full walkthrough + troubleshooting → [INSTALL.md](INSTALL.md)**
 
 ## Uninstall
 
 ```
-/agent-gian uninstall    # reverse everything Agent Gian wrote
-/plugin remove agent-gian   # remove the skill files
+/agent-gian uninstall
 ```
 
-This removes the methodology block from your `CLAUDE.md`, unregisters the hook, deletes `~/.agent-gian/config`, and (after the second command) removes the skill files. Smoke tests verify zero traces remain.
+Then remove the `"agent-gian@agent-gian"` and `"agent-gian": {...}` entries from your `~/.claude/settings.json` and restart Claude Code. Smoke tests in this repo verify zero traces remain. Full steps in [INSTALL.md](INSTALL.md#fully-uninstall).
 
 ## Fork it
 

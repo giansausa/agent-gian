@@ -1,95 +1,224 @@
 # Install Guide
 
+**Total time:** ~3 minutes.
+**What you'll do:** edit one JSON file, restart Claude Code, run one command.
+
+---
+
 ## Prerequisites
 
-- Claude Code installed and authenticated
-- Node.js available on PATH (used by hook scripts)
-- `git` available on PATH
-- Bash (Git Bash on Windows, native on macOS/Linux)
+Before you start, confirm you have:
 
-## Conceptual flow (3 steps)
+- [x] Claude Code installed and authenticated (`claude --version` works)
+- [x] Node.js on PATH (`node --version` works)
+- [x] `git` on PATH (`git --version` works)
+- [x] A bash shell (Git Bash on Windows, Terminal on macOS, any shell on Linux)
 
-### 1. Add Agent Gian as a marketplace source
+If any are missing, install them first — nothing in this guide works without them.
 
-In Claude Code, add `github.com/giansausa/agent-gian` as a plugin marketplace source. The exact slash command varies by Claude Code version — check `/plugin --help` or Claude Code's official plugin docs for the current syntax.
+---
 
-Once added, Claude Code treats the repo as a trusted source of plugins.
+## Step 1: Locate your Claude Code settings file
 
-### 2. Enable the plugin
+| OS | Path |
+|---|---|
+| **macOS** | `~/.claude/settings.json` |
+| **Linux** | `~/.claude/settings.json` |
+| **Windows** | `C:\Users\<your-username>\.claude\settings.json` |
 
-Enable `agent-gian` from the marketplace. Claude Code fetches the plugin files to `~/.claude/plugins/agent-gian/` and registers its skills. At this point you can invoke `/agent-gian`, but it'll just tell you to run setup — the methodology block isn't in your CLAUDE.md yet.
+Open it in any text editor. If the file doesn't exist, create it with `{}` as the content.
 
-### 3. Run setup
+---
+
+## Step 2: Register Agent Gian as a plugin + marketplace
+
+You need to add **two entries** to your `settings.json`:
+
+1. A marketplace source pointing at `github.com/giansausa/agent-gian`
+2. An enabled-plugins entry turning on `agent-gian` from that marketplace
+
+### If your `settings.json` is empty or fresh
+
+Replace the whole file with this:
+
+```json
+{
+  "enabledPlugins": {
+    "agent-gian@agent-gian": true
+  },
+  "extraKnownMarketplaces": {
+    "agent-gian": {
+      "source": {
+        "source": "github",
+        "repo": "giansausa/agent-gian"
+      }
+    }
+  }
+}
+```
+
+### If you already have plugins installed (e.g. Superpowers)
+
+**Add** these entries alongside the existing ones — don't replace anything. Example of what a combined file looks like:
+
+```json
+{
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true,
+    "agent-gian@agent-gian": true
+  },
+  "extraKnownMarketplaces": {
+    "superpowers-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "obra/superpowers-marketplace"
+      }
+    },
+    "agent-gian": {
+      "source": {
+        "source": "github",
+        "repo": "giansausa/agent-gian"
+      }
+    }
+  }
+}
+```
+
+Save the file. Make sure the JSON is valid (no trailing commas, balanced braces).
+
+---
+
+## Step 3: Restart Claude Code
+
+Close Claude Code completely and reopen it. On restart, it reads your `settings.json`, fetches the plugin from GitHub, and registers the 7 Agent Gian skills.
+
+**How to verify the plugin loaded:** type `/` in Claude Code and look for `agent-gian` in the skill list. If you see it, the plugin installed. If you don't, skip to [Troubleshooting](#troubleshooting).
+
+---
+
+## Step 4: Run setup
+
+In any Claude Code session, run:
 
 ```
 /agent-gian setup
 ```
 
-You'll be asked three yes/no questions (one at a time):
+You'll be asked three yes/no questions — one at a time. Answer them based on this table:
 
-| Prompt | What it does | Recommendation |
+| Prompt | What it does | Our recommendation |
 |---|---|---|
-| Append methodology block to CLAUDE.md? | Makes the 40 rules active in every session | **Yes** (required for activation) |
-| Enable pre-commit tsc hook? | Blocks `git commit` when staged TS files have type errors | **Yes** if you work in TypeScript |
-| Enable auto-push after commit? | Overrides Claude Code's safety default; auto-pushes after every successful commit | **No** unless you have a fast-iteration workflow and understand the tradeoff |
+| Append the 40-rule methodology block to your `~/.claude/CLAUDE.md`? | Makes the methodology active in every Claude Code session, across every project | **Yes** (without this, the plugin is inert) |
+| Enable the pre-commit `tsc --noEmit` hook? | Blocks `git commit` when staged TypeScript files have type errors. Auto-skips on non-TS projects. | **Yes** if you work in TypeScript. **No** if you don't. |
+| Enable auto-push after commit? **This overrides Claude Code's default safety.** | Agent Gian skills `git push` immediately after every successful commit | **No** unless you have a solo/fast-iteration workflow and you understand the tradeoff. Default is safer. |
 
-## Verifying install
+---
+
+## Step 5: Verify
+
+Type:
 
 ```
 /agent-gian
 ```
 
-Expected output: a status dashboard showing "methodology installed" and the 7 core skills listed.
+You should see a status dashboard showing:
+- `methodology installed` (if you said yes to prompt 1)
+- The 7 core skills listed
+- The status of your optional toggles (hook enabled/skipped, auto-push enabled/skipped)
 
-## Turning features on/off later
+**If the dashboard shows `methodology missing`**, re-run `/agent-gian setup` and answer yes to the first prompt.
 
-Re-run `/agent-gian setup`. It's idempotent — re-running replaces the existing methodology block (preserving your CLAUDE.md content above and below the sentinels) and lets you toggle hook/auto-push settings.
+---
 
-## Upgrading
+## You're installed. What now?
 
-Use Claude Code's plugin update mechanism (e.g. `/plugin update agent-gian` or the equivalent in your version). After updating, re-run `/agent-gian setup` to refresh the methodology block to the new version.
+Try one of the skills in a real session:
 
-## Uninstalling
+- Hit a bug? → `/agent-gian-diagnose-first` and paste the error
+- Thinking about a launch? → `/agent-gian-review`
+- About to commit? → `/agent-gian-commit`
+- Wrapping up for the day? → `/agent-gian-pause`
+- Coming back the next day? → `/agent-gian-resume`
+
+Full skill reference is in [README.md](README.md).
+
+---
+
+## Changing your mind later
+
+### Toggle individual settings
+Re-run `/agent-gian setup`. It's idempotent — the methodology block gets replaced cleanly (your own CLAUDE.md content above and below the sentinels is preserved), and you can flip hook/auto-push on or off.
+
+### Update to a new version
+Claude Code updates installed plugins via its built-in plugin update mechanism. After the update completes, re-run `/agent-gian setup` once to refresh the methodology block to the new version's text.
+
+### Fully uninstall
+
+Two commands, in this order:
 
 ```
-/agent-gian uninstall       # reverse everything Agent Gian wrote
-/plugin remove agent-gian      # remove the skill files
+/agent-gian uninstall
 ```
 
-The first command:
-- Deletes the methodology block from `~/.claude/CLAUDE.md` (content above and below the sentinels is preserved)
-- Removes the pre-commit hook entry from `~/.claude/settings.json`
-- Deletes `~/.agent-gian/config`
+This deletes the methodology block from your `CLAUDE.md` (content above and below the sentinels is preserved), removes the hook from `settings.json`, and deletes `~/.agent-gian/config`.
 
-The second command removes the plugin files themselves.
+Then, to remove the plugin files themselves, open your `~/.claude/settings.json` and:
+1. Delete the `"agent-gian@agent-gian": true` line from `enabledPlugins`
+2. Delete the `"agent-gian": { ... }` block from `extraKnownMarketplaces`
 
-Smoke tests in this repo (`tests/smoke-uninstall.sh`) verify zero traces remain after uninstall.
+Restart Claude Code. The plugin is fully gone — smoke tests verify zero traces remain.
 
-## Forking
+---
 
-If you want your own flavor:
+## Forking & customizing
+
+Don't like a rule? Fork it:
 
 1. Fork `github.com/giansausa/agent-gian`
-2. Edit rules in `methodology.md` or skills in `skills/*/SKILL.md`
-3. Update the version in `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`
-4. Add your fork as a marketplace source instead of the upstream
-5. Install from your fork
+2. Edit rules in `methodology.md` or any skill in `skills/*/SKILL.md`
+3. Bump the version in `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`
+4. In your `settings.json`, change the `repo` under `extraKnownMarketplaces.agent-gian.source` to point at your fork (e.g. `"repo": "yourusername/agent-gian"`)
+5. Restart Claude Code. You're running your own flavor.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for rule-citation requirements if you want to upstream changes.
+See [CONTRIBUTING.md](CONTRIBUTING.md) if you want to upstream your changes.
+
+---
 
 ## Troubleshooting
 
-**`/agent-gian` shows "methodology missing"**
-You skipped the methodology prompt during setup. Re-run `/agent-gian setup` and answer yes.
+### `/agent-gian` doesn't appear after restart
+- Confirm your `settings.json` is valid JSON. Paste it into any JSON validator.
+- Check the Claude Code logs / status for plugin-load errors.
+- Confirm internet access — Claude Code needs to clone `github.com/giansausa/agent-gian` on first load.
+- Verify the repo slug is exactly `giansausa/agent-gian` (no typos).
 
-**Hook blocks commits unexpectedly**
-The pre-commit tsc hook runs `npx --no-install tsc --noEmit`. If TypeScript isn't installed in the package, it fails. Either install TypeScript locally (`npm install -D typescript`) or disable the hook via `/agent-gian setup`.
+### `/agent-gian` shows "methodology missing"
+You skipped the methodology prompt during setup. Re-run `/agent-gian setup` and answer yes to prompt 1.
 
-**Auto-push pushing somewhere I didn't expect**
-Auto-push uses `git push origin <current-branch>`. Check `git remote -v` to see where `origin` points.
+### Pre-commit hook blocks commits with `npx: command not found`
+The hook calls `npx --no-install tsc --noEmit`. You need Node.js installed with npx available. Either install Node or disable the hook via `/agent-gian setup`.
 
-**Smoke tests fail on Windows with `ENOENT: /tmp/...`**
-Use a scratch dir inside your real HOME instead of `/tmp` — e.g. `TEST_HOME=$HOME/.agent-gian-smoke-test`. Git Bash's `/tmp` doesn't round-trip through Windows Node.
+### Pre-commit hook blocks commits with `tsc: command not found`
+TypeScript isn't installed locally in the package. Either run `npm install -D typescript` in the affected package, or disable the hook via `/agent-gian setup`.
 
-**Install on a non-Windows machine and register-hook says `cygpath: command not found`**
-The `to_native` helper in the scripts falls back to pass-through on systems without `cygpath`. This is expected on macOS/Linux — paths are already native-form there.
+### Auto-push pushing somewhere I didn't expect
+Auto-push runs `git push origin <current-branch>`. Check `git remote -v` to see where `origin` points. If your `origin` has multiple push URLs (e.g. mirroring to two repos), auto-push goes to all of them.
+
+### On Windows, `register-hook.sh` crashes with `ENOENT: /c/...`
+This was fixed in v0.1.0 via the `to_native()` / `cygpath -m` helper. If you see it, you're running a pre-release or fork that predates the fix — upgrade to `v0.1.0` or later.
+
+### On macOS/Linux, scripts warn `cygpath: command not found`
+Not an error — the `to_native()` helper falls back to pass-through on systems without `cygpath`. Paths are already native-form on macOS/Linux, so this is expected.
+
+### Running smoke tests on Windows fails with `/tmp/...` paths
+Use a scratch dir inside your real HOME, not `/tmp`. Example: `TEST_HOME=$HOME/.agent-gian-smoke-test bash tests/smoke-install.sh`. Git Bash's `/tmp` doesn't round-trip through Windows Node.
+
+---
+
+## Still stuck?
+
+Open an issue at [github.com/giansausa/agent-gian/issues](https://github.com/giansausa/agent-gian/issues) with:
+- Your OS + Claude Code version
+- Your `settings.json` (redact any secrets)
+- The exact error message or symptom
