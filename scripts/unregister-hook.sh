@@ -6,6 +6,19 @@ set -euo pipefail
 
 SETTINGS="${HOME}/.claude/settings.json"
 
+# Convert a POSIX path to OS-native form for Node/JSON consumption.
+# On Git Bash for Windows, `cygpath -m` gives forward-slash Windows form
+# (e.g. `/c/Users/x` → `C:/Users/x`) which Node handles. On Linux/macOS,
+# paths pass through unchanged.
+to_native() {
+  if command -v cygpath >/dev/null 2>&1; then
+    cygpath -m "$1"
+  else
+    echo "$1"
+  fi
+}
+SETTINGS_NATIVE="$(to_native "${SETTINGS}")"
+
 if [ ! -f "${SETTINGS}" ]; then
   echo "settings.json not found. Nothing to do."
   exit 0
@@ -13,7 +26,7 @@ fi
 
 node - <<JSEOF
 const fs = require('fs');
-const path = '${SETTINGS}';
+const path = '${SETTINGS_NATIVE}';
 const config = JSON.parse(fs.readFileSync(path, 'utf8'));
 
 if (!config.hooks || !config.hooks.PreToolUse) {
