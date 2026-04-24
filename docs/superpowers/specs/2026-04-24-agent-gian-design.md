@@ -31,7 +31,7 @@ Users can fork `github.com/giansausa/agent-gian`, point their own marketplace re
 | Artifact | Location | Purpose |
 |---|---|---|
 | Methodology block | appended to user's `~/.claude/CLAUDE.md` between `<!-- agent-gian:start -->` / `<!-- agent-gian:end -->` sentinels | Loads the 40 rules into every session for the user, across all projects |
-| Skill files (9 total) | `~/.claude/plugins/agent-gian/skills/` | Makes `/Agent-Gian` and all `/agent-*` commands available |
+| Skill files (9 total) | `~/.claude/plugins/agent-gian/skills/` | Makes `/agent-gian` and all `/agent-gian-*` commands available |
 | Optional pre-commit tsc hook | `~/.claude/plugins/agent-gian/hooks/tsc-check-before-commit.sh` + settings.json registration | Blocks commits with tsc errors when user opts in during install |
 
 Uninstall must remove everything: the skill files, the hook registration in settings.json, AND the methodology block from CLAUDE.md. The sentinels make the CLAUDE.md block a precise slice — the uninstall script deletes from `<!-- agent-gian:start -->` through `<!-- agent-gian:end -->` inclusive, leaving the user's own content intact above and below.
@@ -63,7 +63,7 @@ All rules source-cited from Gian's memory system. No rule is included without a 
 - Don't flip recommendations under pushback (hallucination tell)
 - State uncertainty once, then commit to a call
 - If info is needed, ASK — never silently guess
-- Reproduce bugs before fixing (the `/agent-diagnose-first` gate)
+- Reproduce bugs before fixing (the `/agent-gian-diagnose-first` gate)
 
 ### 3.3 Analysis
 - Dimension scoring 0–100 with evidence for readiness reviews
@@ -97,7 +97,7 @@ All rules source-cited from Gian's memory system. No rule is included without a 
 
 ### 3.7 Session management
 - Close phases cleanly — update plan, commit, save handoff note
-- `/agent-pause` to save-for-tomorrow; `/agent-resume` to pick up
+- `/agent-gian-pause` to save-for-tomorrow; `/agent-gian-resume` to pick up
 - Trigger-phrase pattern: "action items", "updates" → pre-saved lists (implemented per-project)
 
 ### 3.8 Quality
@@ -129,20 +129,20 @@ All rules source-cited from Gian's memory system. No rule is included without a 
 
 | Skill | Role | Enforces |
 |---|---|---|
-| `/Agent-Gian` | Menu + status dashboard. First invocation shows what's loaded + available sub-skills. Subsequent invocations verify the plugin is still active and lists skills. | Layer I |
-| `/agent-diagnose-first` | Pre-fix gate for any bug report. Three-step protocol: reproduce → ranked hypotheses → wait for user confirmation before editing code. | Layer II |
-| `/agent-review` | Dimension-scored readiness review. Produces 0–100 scores per dimension with evidence, overall composite, tiered action plan with time estimates, market/business context. | Layer III |
-| `/agent-qa` | Whole-product QA audit — empty states, dead-end recovery, premium feel, business fit. NOT a crash check. | Layer VIII |
-| `/agent-commit` | Verifies staged changes are atomic (one logical change) + tsc-clean. Auto-pushes after commit if opted in. | Layer V |
-| `/agent-pause` | Save-for-tomorrow: commits WIP, writes handoff note to `project_next_session.md`, updates plan file status. | Layer VII |
-| `/agent-resume` | Loads the last session's handoff note, summarizes current state, suggests what to tackle first. | Layer VII |
+| `/agent-gian` | Menu + status dashboard. First invocation shows what's loaded + available sub-skills. Subsequent invocations verify the plugin is still active and lists skills. | Layer I |
+| `/agent-gian-diagnose-first` | Pre-fix gate for any bug report. Three-step protocol: reproduce → ranked hypotheses → wait for user confirmation before editing code. | Layer II |
+| `/agent-gian-review` | Dimension-scored readiness review. Produces 0–100 scores per dimension with evidence, overall composite, tiered action plan with time estimates, market/business context. | Layer III |
+| `/agent-gian-qa` | Whole-product QA audit — empty states, dead-end recovery, premium feel, business fit. NOT a crash check. | Layer VIII |
+| `/agent-gian-commit` | Verifies staged changes are atomic (one logical change) + tsc-clean. Auto-pushes after commit if opted in. | Layer V |
+| `/agent-gian-pause` | Save-for-tomorrow: commits WIP, writes handoff note to `project_next_session.md`, updates plan file status. | Layer VII |
+| `/agent-gian-resume` | Loads the last session's handoff note, summarizes current state, suggests what to tackle first. | Layer VII |
 
 ### 4.2 Opt-in stack-specific skills
 
 | Skill | Stack | Role |
 |---|---|---|
-| `/agent-ship-mobile` | Expo / React Native | Version bump → tsc → atomic commit → `eas build` → `eas submit` → copy-paste tester notes |
-| `/agent-ship-web` | Next.js / Vercel | tsc → test → atomic commit → push → terse deploy summary |
+| `/agent-gian-ship-mobile` | Expo / React Native | Version bump → tsc → atomic commit → `eas build` → `eas submit` → copy-paste tester notes |
+| `/agent-gian-ship-web` | Next.js / Vercel | tsc → test → atomic commit → push → terse deploy summary |
 
 Opt-in extensions can be turned on at install time or later. Users on other stacks skip them cleanly and nothing about the core install depends on them.
 
@@ -152,19 +152,19 @@ Opt-in extensions can be turned on at install time or later. Users on other stac
 
 The plugin install itself follows Claude Code's native plugin mechanism (exact CLI verified during implementation — same pattern as `superpowers-marketplace`). The plugin ships in a minimal state: core skills registered, methodology block NOT yet written to CLAUDE.md.
 
-The user then runs `/Agent-Gian setup` once, which is where the consent prompts happen via `AskUserQuestion`:
+The user then runs `/agent-gian setup` once, which is where the consent prompts happen via `AskUserQuestion`:
 
 1. "Append the 40-rule methodology block to your `~/.claude/CLAUDE.md`?" (required — if no, plugin is inert)
 2. "Enable the pre-commit `tsc --noEmit` hook? (Blocks commits with type errors.)"
 3. "Enable auto-push after commits? **This overrides Claude Code's default `never push without explicit ask` safety.**" — default answer: NO
-4. "Enable `/agent-ship-mobile` (Expo/EAS/TestFlight)?"
-5. "Enable `/agent-ship-web` (Next.js/Vercel)?"
+4. "Enable `/agent-gian-ship-mobile` (Expo/EAS/TestFlight)?"
+5. "Enable `/agent-gian-ship-web` (Next.js/Vercel)?"
 
-The setup command is idempotent — re-running it shows current settings and lets users toggle individual items. Everything written by setup is tracked so `/Agent-Gian uninstall` can reverse it precisely.
+The setup command is idempotent — re-running it shows current settings and lets users toggle individual items. Everything written by setup is tracked so `/agent-gian uninstall` can reverse it precisely.
 
 This two-step pattern (plugin install → explicit setup with consent) avoids any assumption about whether Claude Code supports interactive prompts during plugin install itself.
 
-### 5.2 `/Agent-Gian` invocation output
+### 5.2 `/agent-gian` invocation output
 
 ```
 🧠  Agent Gian v1.0 — by @giansausa
@@ -182,16 +182,16 @@ ACTIVE (loaded into your session):
   • Product: friction reduction, smart defaults
 
 CORE SKILLS:
-  /agent-diagnose-first    Bug pre-fix gate
-  /agent-review            Dimension-scored readiness review
-  /agent-qa                Whole-product QA audit
-  /agent-commit            Atomic commit + tsc + auto-push
-  /agent-pause             Save-for-tomorrow handoff
-  /agent-resume            Load handoff, restore context
+  /agent-gian-diagnose-first    Bug pre-fix gate
+  /agent-gian-review            Dimension-scored readiness review
+  /agent-gian-qa                Whole-product QA audit
+  /agent-gian-commit            Atomic commit + tsc + auto-push
+  /agent-gian-pause             Save-for-tomorrow handoff
+  /agent-gian-resume            Load handoff, restore context
 
 STACK EXTENSIONS:
-  ✓ /agent-ship-mobile     Expo → EAS → TestFlight
-  ✗ /agent-ship-web        Not installed (run /plugin enable to add)
+  ✓ /agent-gian-ship-mobile     Expo → EAS → TestFlight
+  ✗ /agent-gian-ship-web        Not installed (run /plugin enable to add)
 
 STATUS: 7 skills active · 1 extension · methodology loaded
 Uninstall: /plugin remove agent-gian
@@ -238,18 +238,18 @@ Project-specific rules stay in each project's `CLAUDE.md` or memory folder. They
 | User's existing CLAUDE.md conflicts with Agent Gian rules | Sentinels make Agent Gian's block visible + editable. User's own CLAUDE.md content above/below the sentinels always wins (per Claude Code priority). |
 | Auto-push footgun for users who didn't understand the override | Install flow requires explicit `y/n` consent. Default answer is `n` (preserve safety). Users who say `y` get a README link explaining the tradeoff. |
 | Subagents drift from methodology | Agent Gian's own skills prefer inline execution by default. `superpowers:subagent-driven-development` can still be invoked but Agent Gian's skills warn about drift when the user selects it. |
-| Skill name collisions with other installed skills | All skills are namespaced `agent-*` except the menu (`/Agent-Gian`). Any collision is intentional/user-installed. |
+| Skill name collisions with other installed skills | All skills are namespaced `agent-gian-*` (menu is `/agent-gian`) the menu (`/agent-gian`). Any collision is intentional/user-installed. |
 | Plugin breaks on Claude Code version bumps | CI runs install + skill-invocation smoke tests against the current Claude Code stable. Versions flagged incompatible in `plugin.json`. |
 | Methodology becomes stale | Annual review pass against the latest insights reports; rules without active use across ≥3 user projects get deprecation warnings. |
 
 ## 10. Success criteria
 
 An Agent Gian install is successful when:
-1. A new user runs the install command and `/Agent-Gian` responds within 30 seconds with the menu
+1. A new user runs the install command and `/agent-gian` responds within 30 seconds with the menu
 2. All 7 core skills appear in Claude Code's skill list after install
 3. `/plugin remove agent-gian` cleanly restores the user's CLAUDE.md (sentinels removed, block deleted)
 4. A user can fork the repo, edit a skill, and have the edited version load on their own machine within 2 commands
-5. The uninstall flow leaves zero traces — running `/Agent-Gian uninstall` followed by `/plugin remove agent-gian` returns the user's Claude Code setup to its pre-install state (verified by diff-ing CLAUDE.md and settings.json).
+5. The uninstall flow leaves zero traces — running `/agent-gian uninstall` followed by `/plugin remove agent-gian` returns the user's Claude Code setup to its pre-install state (verified by diff-ing CLAUDE.md and settings.json).
 
 ## 11. Open questions for implementation plan
 
