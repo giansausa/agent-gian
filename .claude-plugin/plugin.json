@@ -1,0 +1,22 @@
+{
+  "name": "agent-gian",
+  "description": "Gian Sausa's shipping methodology — 40 rules, 7 skills, one installer. Release-manager cadence, zero-drift discipline.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Gian Clairon Sausa",
+    "email": "giansausa12345@gmail.com"
+  },
+  "homepage": "https://github.com/giansausa/agent-gian",
+  "repository": "https://github.com/giansausa/agent-gian",
+  "license": "MIT",
+  "keywords": [
+    "methodology",
+    "workflow",
+    "skills",
+    "shipping",
+    "code-discipline",
+    "tdd-adjacent",
+    "atomic-commits",
+    "diagnose-first"
+  ]
+}
