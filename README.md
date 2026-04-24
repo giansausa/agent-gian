@@ -20,35 +20,27 @@ Agent Gian is a Claude Code plugin that loads a complete working methodology int
 
 ## Install (3 minutes)
 
-**Quick version** — open `~/.claude/settings.json` and add these two entries (merge with anything already there):
+**1. One-line install:**
 
-```json
-{
-  "enabledPlugins": {
-    "agent-gian@agent-gian": true
-  },
-  "extraKnownMarketplaces": {
-    "agent-gian": {
-      "source": {
-        "source": "github",
-        "repo": "giansausa/agent-gian"
-      }
-    }
-  }
-}
+```bash
+curl -fsSL https://raw.githubusercontent.com/giansausa/agent-gian/main/install.sh | bash
 ```
 
-Then **restart Claude Code** and run:
+This merges the Agent Gian marketplace + plugin entry into your `~/.claude/settings.json` without touching anything else you already have installed. Idempotent — safe to re-run. Prefer to read before you pipe? The script is [install.sh](install.sh) — ~80 lines, Node + bash only.
+
+**2. Restart Claude Code.** On restart, it fetches the plugin from this repo and registers the 7 skills.
+
+**3. Run setup:**
 
 ```
 /agent-gian setup
 ```
 
-Answer the 3 consent prompts (methodology block = yes, pre-commit tsc hook = yes if you use TypeScript, auto-push = no unless you know what you're opting into).
+Answer the 3 consent prompts: methodology block = **yes**, pre-commit tsc hook = **yes** (if you use TypeScript), auto-push = **no** (unless you know the tradeoff).
 
-**Verify:** run `/agent-gian` — you should see the status dashboard.
+**4. Verify:** run `/agent-gian` — you'll see the status dashboard listing all 7 skills and the methodology state.
 
-📖 **Full walkthrough + troubleshooting → [INSTALL.md](INSTALL.md)**
+📖 **Prefer manual JSON edit, or hit a snag? → [INSTALL.md](INSTALL.md)** covers the alternative path + full troubleshooting.
 
 ## Uninstall
 

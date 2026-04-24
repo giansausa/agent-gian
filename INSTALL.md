@@ -1,7 +1,7 @@
 # Install Guide
 
 **Total time:** ~3 minutes.
-**What you'll do:** edit one JSON file, restart Claude Code, run one command.
+**What you'll do:** run one install command, restart Claude Code, run one setup command.
 
 ---
 
@@ -18,7 +18,34 @@ If any are missing, install them first — nothing in this guide works without t
 
 ---
 
-## Step 1: Locate your Claude Code settings file
+## Recommended: one-line install
+
+Paste this into your terminal:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/giansausa/agent-gian/main/install.sh | bash
+```
+
+What it does:
+- Finds your `~/.claude/settings.json` (creates it if missing)
+- Merges the `agent-gian` marketplace + `agent-gian@agent-gian` plugin entry into it — preserves any other plugins, hooks, themes, or settings you already have
+- Idempotent — safe to re-run
+- Prints the next steps
+
+After it runs:
+1. **Restart Claude Code** so it picks up the new setting and fetches the plugin
+2. **Run `/agent-gian setup`** inside Claude Code (interactive consent for the 3 prompts — see Step 4 below)
+3. **Verify** with `/agent-gian` — you should see the status dashboard
+
+If you prefer to read the install script before running it, it's at [install.sh](install.sh) in this repo — one file, ~80 lines, no dependencies beyond Node.
+
+---
+
+## Alternative: manual JSON edit
+
+Prefer not to pipe scripts to bash? Edit `~/.claude/settings.json` by hand. The script above just automates what this section tells you to do.
+
+### Step 1: Locate your Claude Code settings file
 
 | OS | Path |
 |---|---|
@@ -28,16 +55,14 @@ If any are missing, install them first — nothing in this guide works without t
 
 Open it in any text editor. If the file doesn't exist, create it with `{}` as the content.
 
----
-
-## Step 2: Register Agent Gian as a plugin + marketplace
+### Step 2: Register Agent Gian as a plugin + marketplace
 
 You need to add **two entries** to your `settings.json`:
 
 1. A marketplace source pointing at `github.com/giansausa/agent-gian`
 2. An enabled-plugins entry turning on `agent-gian` from that marketplace
 
-### If your `settings.json` is empty or fresh
+#### If your `settings.json` is empty or fresh
 
 Replace the whole file with this:
 
@@ -57,7 +82,7 @@ Replace the whole file with this:
 }
 ```
 
-### If you already have plugins installed (e.g. Superpowers)
+#### If you already have plugins installed (e.g. Superpowers)
 
 **Add** these entries alongside the existing ones — don't replace anything. Example of what a combined file looks like:
 
@@ -88,15 +113,17 @@ Save the file. Make sure the JSON is valid (no trailing commas, balanced braces)
 
 ---
 
-## Step 3: Restart Claude Code
+## After either install method
+
+Both the one-liner and the manual JSON edit end up at the same state: your `settings.json` has the marketplace + plugin entries. The remaining steps are identical.
+
+### Restart Claude Code
 
 Close Claude Code completely and reopen it. On restart, it reads your `settings.json`, fetches the plugin from GitHub, and registers the 7 Agent Gian skills.
 
 **How to verify the plugin loaded:** type `/` in Claude Code and look for `agent-gian` in the skill list. If you see it, the plugin installed. If you don't, skip to [Troubleshooting](#troubleshooting).
 
----
-
-## Step 4: Run setup
+### Run setup
 
 In any Claude Code session, run:
 
@@ -112,9 +139,7 @@ You'll be asked three yes/no questions — one at a time. Answer them based on t
 | Enable the pre-commit `tsc --noEmit` hook? | Blocks `git commit` when staged TypeScript files have type errors. Auto-skips on non-TS projects. | **Yes** if you work in TypeScript. **No** if you don't. |
 | Enable auto-push after commit? **This overrides Claude Code's default safety.** | Agent Gian skills `git push` immediately after every successful commit | **No** unless you have a solo/fast-iteration workflow and you understand the tradeoff. Default is safer. |
 
----
-
-## Step 5: Verify
+### Verify
 
 Type:
 
