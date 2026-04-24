@@ -1,0 +1,20 @@
+# Changelog
+
+All notable changes to Agent Gian are documented here.
+This project uses semantic versioning (MAJOR.MINOR.PATCH).
+
+## [Unreleased]
+
+## [0.1.0] — 2026-04-24
+
+### Added
+- Initial release.
+- 7 core skills: `/agent-gian` (menu + setup + uninstall), `/agent-gian-diagnose-first`, `/agent-gian-review`, `/agent-gian-qa`, `/agent-gian-commit`, `/agent-gian-pause`, `/agent-gian-resume`.
+- 40-rule methodology block appended to user's `~/.claude/CLAUDE.md` between `<!-- agent-gian:start -->` / `<!-- agent-gian:end -->` sentinels.
+- Optional pre-commit `tsc --noEmit` hook (opt-in).
+- Install/uninstall scripts that leave zero traces on removal.
+- 6 conflict-resolution rules embedded in the methodology block.
+
+### Not included (deferred)
+- `/agent-gian-ship-mobile` and `/agent-gian-ship-web` stack-specific extensions — planned for v0.2.0.
+- Telemetry — not planned; see spec §11 open question.
