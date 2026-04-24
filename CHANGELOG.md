@@ -5,6 +5,12 @@ This project uses semantic versioning (MAJOR.MINOR.PATCH).
 
 ## [Unreleased]
 
+### Fixed
+- `curl | bash` installer now produces a plugin that actually loads. Previously the marketplace manifest declared `name: agent-gian-marketplace` while `install.sh` registered it as `agent-gian`, so Claude Code cached the marketplace under the canonical name from the manifest and the `agent-gian@agent-gian` plugin ID never resolved. Renamed the manifest `name` to `agent-gian` and added self-healing cleanup of the stale cache dir + `known_marketplaces.json` entry on re-run.
+
+### Changed
+- README: installation moved above the feature tour; prose tightened throughout.
+
 ## [0.1.0] — 2026-04-24
 
 ### Added

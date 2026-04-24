@@ -51,6 +51,33 @@ if [ ! -f "${SETTINGS}" ]; then
   echo "Created new ${SETTINGS}"
 fi
 
+# Heal stale state from the v0.1.0 install bug where the marketplace was
+# cached under the name `agent-gian-marketplace` instead of `agent-gian`.
+# If the old cache dir or known_marketplaces.json entry exists, remove them
+# so Claude Code re-fetches the marketplace under the correct name on next
+# restart. Safe no-op on fresh installs.
+STALE_CACHE="${HOME}/.claude/plugins/marketplaces/agent-gian-marketplace"
+KNOWN_MKTS="${HOME}/.claude/plugins/known_marketplaces.json"
+if [ -d "${STALE_CACHE}" ]; then
+  rm -rf "${STALE_CACHE}"
+  echo "- removed stale marketplace cache: agent-gian-marketplace"
+fi
+if [ -f "${KNOWN_MKTS}" ]; then
+  KNOWN_MKTS_NATIVE="$(to_native "${KNOWN_MKTS}")"
+  node - <<JSEOF2
+const fs = require('fs');
+const p = '${KNOWN_MKTS_NATIVE}';
+try {
+  const k = JSON.parse(fs.readFileSync(p, 'utf8'));
+  if (k['agent-gian-marketplace']) {
+    delete k['agent-gian-marketplace'];
+    fs.writeFileSync(p, JSON.stringify(k, null, 2) + '\n');
+    console.log('- removed stale entry from known_marketplaces.json: agent-gian-marketplace');
+  }
+} catch (e) { /* file may be absent or malformed; skip silently */ }
+JSEOF2
+fi
+
 SETTINGS_NATIVE="$(to_native "${SETTINGS}")"
 
 node - <<JSEOF
