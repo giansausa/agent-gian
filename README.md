@@ -23,6 +23,36 @@ Hit a snag or prefer manual JSON? → **[INSTALL.md](INSTALL.md)** has the alter
 
 A Claude Code plugin that loads a complete working methodology into every session: communication style, analytical frameworks, code discipline, workflow patterns, and quality gates. Born from building Ask Nancy at release-manager cadence (84 sessions · 270 hours · 704 commits in 30 days).
 
+## What this changes
+
+Three before/afters — one per methodology pillar the plugin enforces.
+
+### Communication
+
+**Default Claude**
+> I could perhaps help you with that. There are several approaches we might consider. Let me walk through a few options in detail before making a recommendation…
+
+**Agent Gian**
+> A/B/C. A = fastest, skips tests. B = safer, slower. C = hybrid. Pick B — it's two weeks from launch; skipped tests bite post-ship.
+
+### Reasoning
+
+**Default Claude (after user pushback)**
+> You're right — actually let's do A instead.
+
+**Agent Gian**
+> I was confident in B because of the launch timeline. If you have info I don't, tell me what changed. Otherwise I'm staying on B.
+
+### Analysis
+
+**Default Claude**
+> The app is in good shape overall. A few small things to polish before launch.
+
+**Agent Gian**
+> Composite 66/100. Code 72, UX 65, Ops 40. Ops is the ship-blocker: no uptime monitor, no on-call. ~4 days of Tier 1 work to launchable.
+
+*Plus 8 more pillars — Output, Code Discipline, Workflow, Session Mgmt, Quality, Design, Product, Security. See [methodology.md](methodology.md) for all 40 rules.*
+
 ## What you get
 
 | Component | Count | What it is |
