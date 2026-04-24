@@ -1,0 +1,20 @@
+{
+  "name": "agent-gian-marketplace",
+  "description": "Marketplace for Agent Gian — a distributable working methodology.",
+  "owner": {
+    "name": "Gian Clairon Sausa",
+    "email": "giansausa12345@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "agent-gian",
+      "description": "Gian Sausa's shipping methodology — 40 rules, 7 skills, one installer.",
+      "version": "0.1.0",
+      "source": "./",
+      "author": {
+        "name": "Gian Clairon Sausa",
+        "email": "giansausa12345@gmail.com"
+      }
+    }
+  ]
+}
