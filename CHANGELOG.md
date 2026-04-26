@@ -5,11 +5,15 @@ This project uses semantic versioning (MAJOR.MINOR.PATCH).
 
 ## [Unreleased]
 
+### Added
+- `/agent-gian-pitch-site` — one-shot Carnage-style pitch site scaffold. Captures every decision, every code template, and every Gemini Pro prompt from the Carnage Off-road Autoshop build (carnageautoshop.vercel.app) so the same workflow can be replayed for any small business in a fresh project. Stack: Next.js 16 + Tailwind v4 + Vercel. Includes a 13-question onboarding interview, full file tree, embedded code for all 9 home sections + 4 product components + 5 primitives + Quote modal, the FB photo-extraction trick (mobile-UA curl), 11 Playwright smoke tests, the Taglish FB outreach DM template, pricing guidance (PHP 20k–45k tiers), and a Bayan Coffee Roasters worked example. Skill folder: `skills/agent-gian-pitch-site/`. Total skill count is now 8.
+
 ### Fixed
 - `curl | bash` installer now produces a plugin that actually loads. Previously the marketplace manifest declared `name: agent-gian-marketplace` while `install.sh` registered it as `agent-gian`, so Claude Code cached the marketplace under the canonical name from the manifest and the `agent-gian@agent-gian` plugin ID never resolved. Renamed the manifest `name` to `agent-gian` and added self-healing cleanup of the stale cache dir + `known_marketplaces.json` entry on re-run.
 
 ### Changed
 - README: installation moved above the feature tour; prose tightened throughout.
+- README: skill count bumped 7 → 8, table extended with `/agent-gian-pitch-site`, dashboard mock includes new entry.
 
 ## [0.1.0] — 2026-04-24
 

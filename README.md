@@ -11,7 +11,7 @@ Then restart Claude Code, run `/agent-gian setup`, and verify with `/agent-gian`
 **Step-by-step:**
 
 1. **Run the one-liner above.** Merges the marketplace + plugin entry into `~/.claude/settings.json` without touching anything else. Idempotent. Read it first if you want — ~80 lines, Node + bash only: [install.sh](install.sh).
-2. **Restart Claude Code.** It fetches the plugin from this repo and registers the 7 skills.
+2. **Restart Claude Code.** It fetches the plugin from this repo and registers the 8 skills.
 3. **Run `/agent-gian setup`.** Three prompts: methodology block (**yes**), pre-commit tsc hook (**yes** for TS projects), auto-push (**no** unless you know the tradeoff).
 4. **Verify with `/agent-gian`** — you should see the status dashboard.
 
@@ -19,7 +19,7 @@ Hit a snag or prefer manual JSON? → **[INSTALL.md](INSTALL.md)** has the alter
 
 ---
 
-> Gian Sausa's shipping methodology — 40 rules, 7 skills, one installer.
+> Gian Sausa's shipping methodology — 40 rules, 8 skills, one installer.
 
 A Claude Code plugin that loads a complete working methodology into every session: communication style, analytical frameworks, code discipline, workflow patterns, and quality gates. Born from building Ask Nancy at release-manager cadence (84 sessions · 270 hours · 704 commits in 30 days).
 
@@ -59,11 +59,11 @@ Three before/afters — one per methodology pillar the plugin enforces.
 |---|---|---|
 | **Methodology rules** | 40 | Appended to `~/.claude/CLAUDE.md` (between removable sentinels). 11 layers: Communication, Reasoning, Analysis, Output, Code Discipline, Workflow, Session Management, Quality, Design Principles, Product Thinking, Security. |
 | **Conflict resolutions** | 6 | Embedded rulings for rule tensions — so Claude doesn't freeze when rules pull against each other. |
-| **Slash-command skills** | 7 | See table below. |
+| **Slash-command skills** | 8 | See table below. |
 | **Optional hooks** | 1 | Pre-commit `tsc --noEmit` gate (opt-in). Blocks commits on TS errors. Skips non-TS projects. |
 | **Install scripts** | 1 | `install.sh` for the one-liner. Manual JSON edit documented in [INSTALL.md](INSTALL.md). |
 
-### The 7 skills
+### The 8 skills
 
 | Command | When you'd run it | What it does |
 |---|---|---|
@@ -74,6 +74,7 @@ Three before/afters — one per methodology pillar the plugin enforces.
 | `/agent-gian-commit` | About to run `git commit` | Atomicity check + `tsc --noEmit` + Conventional Commits + auto-push (if opted in) |
 | `/agent-gian-pause` | End of day, context switch | Commits WIP, writes handoff note, updates active plan file |
 | `/agent-gian-resume` | Start of day, returning to a project | Reads last handoff, restores context cleanly |
+| `/agent-gian-pitch-site` | Selling / scaffolding a marketing website for a small business | One-shot Carnage-style pitch site — Next.js 16 + Tailwind v4 + Vercel, 9 sections, full code templates + Gemini prompts + FB outreach |
 
 ## Examples
 
@@ -193,8 +194,9 @@ CORE SKILLS:
   /agent-gian-commit            Atomic commit + tsc + auto-push
   /agent-gian-pause             Save-for-tomorrow handoff
   /agent-gian-resume            Load handoff, restore context
+  /agent-gian-pitch-site        Carnage-style pitch site scaffold
 
-STATUS: 7 skills active, methodology installed, tsc hook enabled, auto-push OFF
+STATUS: 8 skills active, methodology installed, tsc hook enabled, auto-push OFF
 Setup:     /agent-gian setup
 Uninstall: /agent-gian uninstall
 ```
